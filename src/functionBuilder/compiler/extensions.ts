@@ -31,16 +31,16 @@ export const addExtensionLib = async (
       ),
       extension
     );
-    await asyncExecute(
-      `cd ${buildPath}/src/extensions;tsc ${name}.ts`,
-      commandErrorHandler(
+    await asyncExecute(`cd ${buildPath}/src/extensions;tsc ${name}.ts`, {
+      callback: commandErrorHandler(
         {
           user,
           description: "Error compiling extensionsLib",
         },
         streamLogger
-      )
-    );
+      ),
+      rejectOnError: true,
+    });
   } catch (error) {
     console.log(error);
     logErrorToDB(

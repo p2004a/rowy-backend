@@ -5,7 +5,7 @@
   "private": true,
   "main": "build/index.js",
   "scripts": {
-    "start": "node build/index.js",
+    "start": "node --enable-source-maps build/index.js",
     "build": "tsc;cpy --cwd=src --parents '**/*.json' ../build/",
     "deploy": "./deploy.sh --project"
   },

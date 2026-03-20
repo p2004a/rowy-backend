@@ -14,13 +14,15 @@ export const addPackages = async (
   if (packagesString.trim().length !== 0) {
     const success = await asyncExecute(
       `cd ${buildPath};yarn add ${packagesString}`,
-      commandErrorHandler(
-        {
-          user,
-          description: "Error adding packages",
-        },
-        streamLogger
-      )
+      {
+        callback: commandErrorHandler(
+          {
+            user,
+            description: "Error adding packages",
+          },
+          streamLogger
+        ),
+      }
     );
     return success;
   }

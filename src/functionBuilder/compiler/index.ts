@@ -29,34 +29,31 @@ export default async function generateConfig(
   buildFolderTimestamp
 ) {
   const projectId = await getProjectId();
-  await asyncExecute(
-    `cd ${buildPath};pwd;ls -al`,
-    () => {
+  await asyncExecute(`cd ${buildPath};pwd;ls -al`, {
+    callback: () => {
       streamLogger.info("1");
     },
-    streamLogger
-  );
-  await asyncExecute(
-    `cd ${buildPath};less package.json`,
-    () => {
+    logger: streamLogger,
+  });
+  await asyncExecute(`cd ${buildPath};less package.json`, {
+    callback: () => {
       streamLogger.info("2");
     },
-    streamLogger
-  );
-  await asyncExecute(
-    `cd ${buildPath}/src;pwd;ls -al`,
-    () => {
+    logger: streamLogger,
+  });
+  await asyncExecute(`cd ${buildPath}/src;pwd;ls -al`, {
+    callback: () => {
       streamLogger.info("3");
     },
-    streamLogger
-  );
-  await asyncExecute(
-    `cd ${buildPath};yarn install --mutex network`,
-    () => {
+    logger: streamLogger,
+  });
+  await asyncExecute(`cd ${buildPath};yarn install --mutex network`, {
+    callback: () => {
       streamLogger.info("Base dependencies installed successfully");
     },
-    streamLogger
-  );
+    logger: streamLogger,
+    rejectOnError: true,
+  });
 
   await streamLogger.info(`Generating schema...`);
   const {
@@ -110,15 +107,17 @@ export default async function generateConfig(
   await streamLogger.info(`Validating config file...`);
   const isFunctionConfigValid = await asyncExecute(
     `cd ${buildPath}/src;tsc --skipLibCheck functionConfig.ts`,
-    commandErrorHandler(
-      {
-        user,
-        functionConfigTs: configFile,
-        description: `Invalid compiled functionConfig.ts`,
-      },
-      streamLogger
-    ),
-    streamLogger
+    {
+      callback: commandErrorHandler(
+        {
+          user,
+          functionConfigTs: configFile,
+          description: `Invalid compiled functionConfig.ts`,
+        },
+        streamLogger
+      ),
+      logger: streamLogger,
+    }
   );
   if (!isFunctionConfigValid) {
     throw new Error("Invalid compiled functionConfig.ts");

@@ -77,7 +77,10 @@ export const functionBuilder = async (
       await streamLogger.info(`Duplicating functions template to ${buildPath}`);
       await asyncExecute(
         `mkdir -m 777 -p ${buildPath}; cp -Rp build/functionBuilder/functions/* ${buildPath}`,
-        commandErrorHandler({ user }, streamLogger)
+        {
+          callback: commandErrorHandler({ user }, streamLogger),
+          rejectOnError: true,
+        }
       );
 
       const success = await generateConfig(
@@ -103,10 +106,10 @@ export const functionBuilder = async (
       }
 
       await streamLogger.info("Installing dependencies...");
-      await asyncExecute(
-        `cd ${buildPath}; yarn install --mutex network`,
-        commandErrorHandler({ user }, streamLogger)
-      );
+      await asyncExecute(`cd ${buildPath}; yarn install --mutex network`, {
+        callback: commandErrorHandler({ user }, streamLogger),
+        rejectOnError: true,
+      });
 
       await streamLogger.info(`Deploying ${functionName} to ${projectId}`);
 
@@ -145,8 +148,11 @@ export const functionBuilder = async (
       await new Promise((resolve) => setTimeout(resolve, 100));
       await asyncExecute(
         `cd ${buildPath}; yarn deploy --project ${projectId} --only functions`,
-        commandErrorHandler({ user }, streamLogger),
-        streamLogger
+        {
+          callback: commandErrorHandler({ user }, streamLogger),
+          logger: streamLogger,
+          rejectOnError: true,
+        }
       );
       await streamLogger.end();
       return {
