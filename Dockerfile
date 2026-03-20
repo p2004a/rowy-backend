@@ -1,23 +1,24 @@
+# Build stage
+FROM node:22-alpine AS build
+
+WORKDIR /home/node/app
+
+COPY package.json yarn.lock* ./
+RUN yarn --frozen-lockfile
+COPY . ./
+RUN yarn build
+
+# Production stage
 FROM node:22-alpine
 
-# Create and change to the app directory.
 WORKDIR /home/node/app
-# Copy application dependency manifests to the container image.
-# A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
-# Copying this first prevents re-running npm install on every code change.
-COPY package*.json ./
-COPY . ./
-# Install production dependencies.
-# If you add a package-lock.json, speed your build by switching to 'npm ci'.
-# RUN npm ci --only=production
-RUN yarn
-RUN npx tsc
-RUN yarn build
-#  install ffmpeg
-RUN apk add --no-cache ffmpeg
 
-# Copy local code to the container image.
+RUN apk add --no-cache tini
+ENTRYPOINT ["tini", "--"]
 
+COPY package.json yarn.lock* ./
+RUN yarn --frozen-lockfile --production && yarn cache clean
 
-# Run the web service on container startup.
-CMD [ "yarn", "start" ]
+COPY --from=build /home/node/app/build ./build
+
+CMD [ "node", "build/index.js" ]

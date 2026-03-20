@@ -1,6 +1,7 @@
 #!/bin/bash
 name=rowy-backend
-region=us-central1
+repository=main
+region=europe-west1
 helpFunction()
 {
    echo "Usage: ./deploy.sh --project [YOUR GCLOUD PROJECT ID]"
@@ -16,7 +17,7 @@ while test $# -gt 0; do
                     ;;
                 *)
                    echo "$1 is not a recognized flag!"
-                   return 1;
+                   exit 1;
                    ;;
           esac
   done
@@ -25,8 +26,7 @@ if [[ -z "$project_id" ]];
 then
    helpFunction
 fi
-npx tsc
-npm run build
-gcloud config set project $project_id
-gcloud builds submit --tag gcr.io/$project_id/$name
-gcloud run deploy $name --image gcr.io/$project_id/$name --platform managed --cpu 1000m --memory 2Gi --allow-unauthenticated --region $region
+gcloud --project $project_id run deploy $name --source . \
+  --image ${region}-docker.pkg.dev/${project_id}/${repository}/${name} \
+  --platform managed --cpu 1000m --memory 2Gi --allow-unauthenticated --region $region \
+  --service-account rowy-backend@${project_id}.iam.gserviceaccount.com
