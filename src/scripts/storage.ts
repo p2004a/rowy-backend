@@ -1,6 +1,6 @@
 import { fromBuffer } from "file-type";
 import { storage } from "../firebaseConfig";
-import * as uuid from "uuid";
+import * as crypto from "node:crypto";
 
 import fetch from "node-fetch";
 import { getProjectId } from "../metadataService";
@@ -43,7 +43,7 @@ export const data2storage = async (
         ext: ".txt",
         mime: "text/plain",
       };
-  let fileName = options.fileName ?? uuid.v4();
+  let fileName = options.fileName ?? crypto.randomUUID();
   if (!fileName.includes(".")) {
     fileName = `${fileName}.${fileType.ext}`;
   }
@@ -51,7 +51,7 @@ export const data2storage = async (
   const file = bucket.file(
     `${options.folderPath ?? "rowyUploads"}/${fileName}`
   );
-  const token = uuid.v4();
+  const token = crypto.randomUUID();
   await file.save(data, {
     metadata: {
       contentType: fileType.mime,
