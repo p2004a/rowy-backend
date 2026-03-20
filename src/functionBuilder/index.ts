@@ -147,7 +147,7 @@ export const functionBuilder = async (
       );
       await new Promise((resolve) => setTimeout(resolve, 100));
       await asyncExecute(
-        `cd ${buildPath}; yarn deploy --project ${projectId} --only functions`,
+        `cd ${buildPath}; yarn deploy --project ${projectId} --only functions:R-${functionName}`,
         {
           callback: commandErrorHandler({ user }, streamLogger),
           logger: streamLogger,

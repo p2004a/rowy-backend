@@ -21,4 +21,4 @@ RUN yarn --frozen-lockfile --production && yarn cache clean
 
 COPY --from=build /home/node/app/build ./build
 
-CMD [ "node", "build/index.js" ]
+CMD [ "npm", "start" ]
