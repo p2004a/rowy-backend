@@ -1,13 +1,13 @@
-import * as functions from "firebase-functions";
+import type { Change } from "firebase-functions/v2/firestore";
+import type { DocumentSnapshot } from "firebase-admin/firestore";
 import { propagateChanges, removeCopiesOfDeleteDoc } from "./SourceFns";
 import {
   addTargetRef,
   removeTargetRef,
   removeRefsOnTargetDelete,
 } from "./TargetFns";
-//import { asyncForEach} from '../utils'
 const propagateChangesOnTrigger = (
-  change: functions.Change<functions.firestore.DocumentSnapshot>,
+  change: Change<DocumentSnapshot>,
   triggerType: "delete" | "create" | "update"
 ) => {
   switch (triggerType) {
@@ -22,7 +22,7 @@ const propagateChangesOnTrigger = (
 };
 
 const updateLinks = (
-  change: functions.Change<functions.firestore.DocumentSnapshot>,
+  change: Change<DocumentSnapshot>,
   config: { fieldName: string; trackedFields: string[] }
 ) => {
   const beforeDocPaths = change.before.get(config.fieldName)
@@ -55,7 +55,7 @@ const updateLinks = (
   }
 };
 export default function propagate(
-  change: functions.Change<functions.firestore.DocumentSnapshot>,
+  change: Change<DocumentSnapshot>,
   config: { fieldName: string; trackedFields: string[] }[],
   triggerType: "delete" | "create" | "update"
 ) {

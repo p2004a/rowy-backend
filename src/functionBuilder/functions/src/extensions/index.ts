@@ -1,4 +1,5 @@
-import * as functions from "firebase-functions/v1";
+import type { Change } from "firebase-functions/v2/firestore";
+import type { DocumentSnapshot } from "firebase-admin/firestore";
 import utilFns, { hasRequiredFields, getTriggerType } from "../utils";
 import { db, auth, storage } from "../firebaseConfig";
 import { LoggingFactory } from "../logging";
@@ -6,8 +7,7 @@ import { LoggingFactory } from "../logging";
 const extension =
   (extensionConfig, fieldTypes, tableSchema) =>
   async (
-    change: functions.Change<functions.firestore.DocumentSnapshot>,
-    context: functions.EventContext
+    change: Change<DocumentSnapshot>,
   ) => {
     const beforeData = change.before?.data();
     const afterData = change.after?.data();
@@ -83,7 +83,7 @@ const extension =
     } catch (err) {
       const { name, type } = extensionConfig;
       console.log(
-        `error in ${name} extension of type ${type}, on ${context.eventType} in Doc ${context.resource.name}`
+        `error in ${name} extension of type ${type}, on ${triggerType} in Doc ${ref.path}`
       );
       console.error(err);
       return Promise.reject(err);

@@ -1,11 +1,9 @@
-import * as functions from "firebase-functions/v1";
-
 export const hasAnyRole = (
   authorizedRoles: string[],
-  context: functions.https.CallableContext
+  context: { auth?: { token: { roles?: string[] } } }
 ) => {
   if (!context.auth || !context.auth.token.roles) return false;
-  const userRoles = context.auth.token.roles as string[];
+  const userRoles = context.auth.token.roles;
   const authorization = authorizedRoles.reduce(
     (authorized: boolean, role: string) => {
       if (userRoles.includes(role)) return true;

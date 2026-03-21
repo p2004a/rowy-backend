@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
-import * as functions from "firebase-functions";
+import type { Change } from "firebase-functions/v2/firestore";
+import type { DocumentSnapshot } from "firebase-admin/firestore";
 import * as _ from "lodash";
 export const serverTimestamp = admin.firestore.FieldValue.serverTimestamp;
 import { sendEmail } from "./email";
@@ -49,7 +50,7 @@ export const getTriggerType = (change) =>
     : "delete";
 
 export const changedDocPath = (
-  change: functions.Change<functions.firestore.DocumentSnapshot>
+  change: Change<DocumentSnapshot>
 ) => change.before?.ref.path ?? change.after.ref.path;
 export const rowReducer = (fieldsToSync, row) =>
   fieldsToSync.reduce((acc: any, curr: string) => {
@@ -59,7 +60,7 @@ export const rowReducer = (fieldsToSync, row) =>
   }, {});
 
 const hasChanged =
-  (change: functions.Change<functions.firestore.DocumentSnapshot>) =>
+  (change: Change<DocumentSnapshot>) =>
   (trackedFields: string[]) => {
     const before = change.before?.data();
     const after = change.after?.data();

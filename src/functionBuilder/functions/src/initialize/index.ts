@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+import type { DocumentSnapshot } from "firebase-admin/firestore";
 import utilFns from "../utils";
 import { db, auth, storage } from "../firebaseConfig";
 import { LoggingFactory } from "../logging";
@@ -6,7 +6,7 @@ import { LoggingFactory } from "../logging";
 const initializedDoc = (
   columns: { fieldName: string; type: string; value?: any; script?: any }[]
 ) => {
-  return async (snapshot: functions.firestore.DocumentSnapshot) =>
+  return async (snapshot: DocumentSnapshot) =>
     columns.reduce(async (acc, column) => {
       const logging = await LoggingFactory.createDefaultValueLogging(
         column.fieldName,

@@ -1,8 +1,9 @@
-import * as functions from "firebase-functions";
+import type { Change } from "firebase-functions/v2/firestore";
+import type { DocumentSnapshot } from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
 import { db, auth, storage } from "../firebaseConfig";
 import utilFns from "../utils";
-import { LoggingFactory, RowyLogging } from "../logging";
+import { LoggingFactory, type RowyLogging } from "../logging";
 import { tableSchema } from "../functionConfig";
 const derivative =
   (
@@ -21,7 +22,7 @@ const derivative =
       }) => any;
     }[]
   ) =>
-  async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
+  async (change: Change<DocumentSnapshot>) => {
     try {
       const row = change.after?.data();
       const ref = change.after ? change.after.ref : change.before.ref;

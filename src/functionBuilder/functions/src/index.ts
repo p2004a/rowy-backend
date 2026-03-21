@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions/v1";
+import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import derivative from "./derivatives";
 import extension from "./extensions";
 import * as config from "./functionConfig";
@@ -8,11 +8,15 @@ import propagate from "./propagates";
 import initialize from "./initialize";
 
 export const R = {
-  [functionConfig.functionName]: functions
-    .region(functionConfig.region)
-    .runWith(functionConfig.runtimeOptions)
-    .firestore.document(functionConfig.triggerPath)
-    .onWrite(async (change, context) => {
+  [functionConfig.functionName]: onDocumentWritten(
+    {
+      document: functionConfig.triggerPath,
+      region: functionConfig.region,
+      ...functionConfig.runtimeOptions,
+    },
+    async (event) => {
+      const change = event.data;
+      if (!change) return;
       const triggerType = getTriggerType(change);
       let promises: Promise<any>[] = [];
       const extensionPromises = functionConfig.extensionsConfig
@@ -25,7 +29,7 @@ export const R = {
               extensionConfig,
               functionConfig.fieldTypes,
               functionConfig.tableSchema
-            )(change, context);
+            )(change);
           } catch (err) {
             console.log(`caught error: ${err}`);
           }
@@ -74,5 +78,6 @@ export const R = {
       } catch (err) {
         console.log(`caught error: ${err}`);
       }
-    }),
+    }
+  ),
 };

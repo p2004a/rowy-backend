@@ -153,6 +153,9 @@ export const generateFile = async (configData, buildFolderTimestamp) => {
     runtimeOptions: JSON.stringify({
       serviceAccount: `rowy-functions@${projectId}.iam.gserviceaccount.com`,
       ...runtimeOptions,
+      ...(runtimeOptions.memory
+        ? { memory: runtimeOptions.memory.replace(/MB$/, "MiB").replace(/GB$/, "GiB") }
+        : {}),
     }),
     tableSchema: JSON.stringify(tableSchema),
     region: JSON.stringify(region),
