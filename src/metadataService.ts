@@ -1,35 +1,37 @@
 import { Request, Response } from "express";
-import axios from "axios";
-import { env } from "process";
 
-const axiosInstance = axios.create({
-  baseURL: "http://metadata.google.internal/",
-  timeout: 1000,
-  headers: { "Metadata-Flavor": "Google" },
-});
+const metadataBaseURL = "http://metadata.google.internal/";
+const metadataHeaders = { "Metadata-Flavor": "Google" };
+
+const metadataGet = async (path: string): Promise<string> => {
+  const response = await fetch(`${metadataBaseURL}${path}`, {
+    headers: metadataHeaders,
+    signal: AbortSignal.timeout(1000),
+  });
+  if (!response.ok) {
+    throw new Error(`Metadata request failed: ${response.status} ${response.statusText}`);
+  }
+  return response.text();
+};
 
 export const metadataService = (req: Request, res: Response) => {
   let path =
     req.query.path ||
     "computeMetadata/v1/instance/service-accounts/default/scopes";
-  axiosInstance.get(path as string).then((response) => {
-    res.send({ data: response.data });
+  metadataGet(path as string).then((data) => {
+    res.send({ data });
   });
 };
 export const getServiceAccountEmail = async () =>
   (
-    await axiosInstance.get("computeMetadata/v1/instance/service-accounts")
-  ).data.split("\n")[1];
+    await metadataGet("computeMetadata/v1/instance/service-accounts")
+  ).split("\n")[1];
 export const getProjectId = async () =>
-  (await axiosInstance.get("computeMetadata/v1/project/project-id")).data;
+  metadataGet("computeMetadata/v1/project/project-id");
 export const getNumericProjectId = async () =>
-  (await axiosInstance.get("computeMetadata/v1/project/numeric-project-id"))
-    .data;
+  metadataGet("computeMetadata/v1/project/numeric-project-id");
 
 export const generateServiceAccessToken = async (audience) =>
-  (
-    await axiosInstance.get(
-      `computeMetadata/v1/instance/service-accounts/default/identity?audience=${audience}`
-    )
-  ).data;
-//https://www.googleapis.com/oauth2/v1/certs
+  metadataGet(
+    `computeMetadata/v1/instance/service-accounts/default/identity?audience=${audience}`
+  );

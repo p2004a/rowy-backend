@@ -1,22 +1,20 @@
-import axios from "axios";
 import { generateServiceAccessToken, getProjectId } from "./metadataService";
 
 const meta = require("../package.json");
 
-const getAxiosInstance = async () => {
+const getServiceConfig = async () => {
   const baseURL =
     process.env.DEV === "true"
       ? "https://rowy-run-service-gkxqefhk3q-uc.a.run.app"
       : "https://rowy.run/";
   const authToken = await generateServiceAccessToken(baseURL);
-  return axios.create({
-    baseURL,
-    timeout: 1000,
+  return {
+    baseURL: baseURL.endsWith("/") ? baseURL : baseURL + "/",
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + authToken,
     },
-  });
+  };
 };
 
 export const getExtension = async (
@@ -26,19 +24,35 @@ export const getExtension = async (
   extension: string;
   syncScript?: string;
 }> => {
-  const axiosInstance = await getAxiosInstance();
-  return (await axiosInstance.get(`extensions/${extensionId}`)).data;
+  const config = await getServiceConfig();
+  const response = await fetch(`${config.baseURL}extensions/${extensionId}`, {
+    headers: config.headers,
+    signal: AbortSignal.timeout(1000),
+  });
+  if (!response.ok) {
+    throw new Error(`getExtension failed: ${response.status} ${response.statusText}`);
+  }
+  return response.json();
 };
 
 let projectId;
 
-const telemetryInstance = axios.create({
-  baseURL: "https://rowy.events/",
-  timeout: 1000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+const telemetryBaseURL = "https://rowy.events/";
+const telemetryHeaders = { "Content-Type": "application/json" };
+
+const telemetryPost = async (path: string, body: object) => {
+  const response = await fetch(`${telemetryBaseURL}${path}`, {
+    method: "POST",
+    headers: telemetryHeaders,
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(1000),
+  });
+  if (!response.ok) {
+    throw new Error(`Telemetry request failed: ${response.status} ${response.statusText}`);
+  }
+  return response;
+};
+
 export const telemetry = async (event) => {
   if (!projectId) {
     projectId = await getProjectId();
@@ -48,7 +62,7 @@ export const telemetry = async (event) => {
     event,
     source: meta.name,
   };
-  return telemetryInstance.post(`monitor`, body);
+  return telemetryPost(`monitor`, body);
 };
 
 export const telemetryError = async (event, error) => {
@@ -62,7 +76,7 @@ export const telemetryError = async (event, error) => {
     error: JSON.stringify(error),
   };
   console.log("error", body);
-  return telemetryInstance.post(`error`, body);
+  return telemetryPost(`error`, body);
 };
 
 export const telemetryRuntimeDependencyPerformance = async ({
@@ -84,7 +98,7 @@ export const telemetryRuntimeDependencyPerformance = async ({
     yarnFinishTime,
     dependenciesString,
   };
-  return telemetryInstance.post(`runtime-dependency-performance`, body);
+  return telemetryPost(`runtime-dependency-performance`, body);
 };
 
 export const inviteUserService = async (
@@ -104,12 +118,15 @@ export const inviteUserService = async (
   extension: string;
   syncScript?: string;
 }> => {
-  const axiosInstance = await getAxiosInstance();
-  return (
-    await axiosInstance.post(`inviteUser`, {
-      projectId,
-      newUser,
-      inviter,
-    })
-  ).data;
+  const config = await getServiceConfig();
+  const response = await fetch(`${config.baseURL}inviteUser`, {
+    method: "POST",
+    headers: config.headers,
+    body: JSON.stringify({ projectId, newUser, inviter }),
+    signal: AbortSignal.timeout(1000),
+  });
+  if (!response.ok) {
+    throw new Error(`inviteUser failed: ${response.status} ${response.statusText}`);
+  }
+  return response.json();
 };

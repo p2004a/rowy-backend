@@ -1,40 +1,43 @@
 import { Request } from "express";
-import axios from "axios";
 import { getProjectId } from "../metadataService";
 
 export const triggerJob = async (req: Request) => {
   const { jobName, region } = req.body;
 
   try {
-    const projectId = await getProjectId();
     // fetch access token https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#applications
-    const tokenRes = await axios(
-      `http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token`,
-      {
-        method: "get",
-        headers: {
-          "Metadata-Flavor": `Google`,
-        },
-      }
-    );
-    console.log(
-      `tokenRes status ${tokenRes.status} ${tokenRes.statusText} ${tokenRes.data.token_type} ${tokenRes.data.access_token}`
-    );
-    console.log(JSON.stringify(tokenRes.data));
-    const res = await axios(
+    const [projectId, tokenRes] = await Promise.all([
+      getProjectId(),
+      fetch(
+        `http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token`,
+        {
+          method: "GET",
+          headers: {
+            "Metadata-Flavor": `Google`,
+          },
+          signal: AbortSignal.timeout(1000),
+        }
+      ),
+    ]);
+    if (!tokenRes.ok) {
+      throw new Error(`Token fetch failed: ${tokenRes.status} ${tokenRes.statusText}`);
+    }
+    const tokenData = await tokenRes.json();
+    const res = await fetch(
       `https://${
         region ?? "us-central1"
       }-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${projectId}/jobs/${jobName}:run`,
       {
-        method: "post",
+        method: "POST",
         headers: {
-          Authorization: `${tokenRes.data.token_type} ${tokenRes.data.access_token}`,
+          Authorization: `${tokenData.token_type} ${tokenData.access_token}`,
         },
+        signal: AbortSignal.timeout(1000),
       }
     );
     console.log(`status ${res.status} ${res.statusText}`);
     return {
-      success: 200 <= res.status && res.status < 300,
+      success: res.ok,
       message: `status ${res.status} ${res.statusText}`,
     };
   } catch (e: any) {
