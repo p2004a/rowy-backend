@@ -6,7 +6,7 @@
   "main": "build/index.js",
   "scripts": {
     "start": "node --enable-source-maps build/index.js",
-    "build": "tsc;cpy --cwd=src --parents '**/*.json' ../build/",
+    "build": "tsc;cpy --cwd=src '**/*.json' ../build/",
     "deploy": "./deploy.sh --project"
   },
   "engines": {
@@ -19,11 +19,11 @@
     "@google-cloud/secret-manager": "^6.1.1",
     "algoliasearch": "^5.49.2",
     "express": "^5.2.1",
-    "file-type": "^16.5.3",
+    "file-type": "^21.3.3",
     "firebase-admin": "^13.7.0",
     "firebase-tools": "^15.11.0",
     "google-auth-library": "^10.6.2",
-    "js-beautify": "^1.13.0",
+    "js-beautify": "^1.15.4",
     "lodash": "^4.17.23",
     "sucrase": "^3.35.1",
     "typescript": "^5.9.3"
@@ -31,6 +31,6 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^24",
-    "cpy-cli": "^2.0.0"
+    "cpy-cli": "^7.0.0"
   }
 }

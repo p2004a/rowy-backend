@@ -1,4 +1,4 @@
-import { fromBuffer } from "file-type";
+import { fileTypeFromBuffer } from "file-type";
 import { storage } from "../firebaseConfig";
 import * as crypto from "node:crypto";
 
@@ -37,7 +37,7 @@ export const data2storage = async (
   const fileType = options.fileType
     ? options.fileType
     : Buffer.isBuffer(data)
-    ? await fromBuffer(data)
+    ? await fileTypeFromBuffer(data)
     : {
         ext: ".txt",
         mime: "text/plain",
