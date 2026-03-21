@@ -1,7 +1,6 @@
 import { db, auth, storage } from "../firebaseConfig";
 import { Request, Response } from "express";
 import { User } from "../types/User";
-import fetch from "node-fetch";
 import { DocumentReference } from "firebase-admin/firestore";
 import rowy from "./rowy";
 import { installDependenciesIfMissing } from "../utils";
@@ -52,7 +51,7 @@ export const evaluateDerivative = async (req: Request, res: Response) => {
     }
     const config = schemaDocData.columns[columnKey].config;
     const { derivativeFn, script } = config;
-    const importHeader = `import rowy from "./rowy";\n import fetch from "node-fetch";`;
+    const importHeader = `import rowy from "./rowy";\n`;
     const code = transpile(importHeader, derivativeFn, script, "derivative");
 
     const { yarnStartTime, yarnFinishTime, dependenciesString } =

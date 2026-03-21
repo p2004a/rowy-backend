@@ -2,7 +2,6 @@ import _get from "lodash/get";
 import { db, auth } from "../firebaseConfig";
 import { Request, Response } from "express";
 import { User } from "../types/User";
-import fetch from "node-fetch";
 import { DocumentReference } from "firebase-admin/firestore";
 import rowy from "./rowy";
 

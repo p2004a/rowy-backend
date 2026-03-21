@@ -159,7 +159,7 @@ export const generateFile = async (configData, buildFolderTimestamp) => {
     searchHost: JSON.stringify(searchHost),
     searchIndices: JSON.stringify(searchIndices),
   };
-  const baseFile = `import fetch from "node-fetch";\n import rowy from "./rowy";\n`;
+  const baseFile = `import rowy from "./rowy";\n`;
   const fileData = Object.keys(serializedConfigData).reduce((acc, currKey) => {
     return `${acc}\nexport const ${currKey} = ${serializedConfigData[currKey]}`;
   }, ``);

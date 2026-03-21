@@ -2,7 +2,6 @@ import { fromBuffer } from "file-type";
 import { storage } from "../firebaseConfig";
 import * as crypto from "node:crypto";
 
-import fetch from "node-fetch";
 import { getProjectId } from "../metadataService";
 export const url2storage = async (
   url: string,
@@ -15,7 +14,7 @@ export const url2storage = async (
 ) => {
   const response = await fetch(url);
   if (response.ok) {
-    const dataBuffer = await response.buffer();
+    const dataBuffer = Buffer.from(await response.arrayBuffer());
     const fileName = options.fileName ?? url.split("/").pop();
     return await data2storage(dataBuffer, { ...options, fileName });
   } else {

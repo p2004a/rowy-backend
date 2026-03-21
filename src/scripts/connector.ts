@@ -1,7 +1,6 @@
 import { db, auth, storage } from "../firebaseConfig";
 import { Request, Response } from "express";
 import { User } from "../types/User";
-import fetch from "node-fetch";
 import { DocumentReference } from "firebase-admin/firestore";
 import rowy, { Rowy } from "./rowy";
 import { Auth } from "firebase-admin/auth";
@@ -65,7 +64,7 @@ export const connector = async (req: Request, res: Response) => {
     }
     const config = schemaDocData.columns[columnKey].config;
     const { connectorFn } = config;
-    const importHeader = `import rowy from "./rowy";\n import fetch from "node-fetch";\n`;
+    const importHeader = `import rowy from "./rowy";\n`;
 
     const connectorFnBody = transpile(
       importHeader,

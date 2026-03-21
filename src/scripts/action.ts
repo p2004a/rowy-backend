@@ -2,7 +2,6 @@ import _get from "lodash/get";
 import { db, auth, storage } from "../firebaseConfig";
 import { Request, Response } from "express";
 import { User } from "../types/User";
-import fetch from "node-fetch";
 import { FieldValue } from "firebase-admin/firestore";
 import rowy from "./rowy";
 import { installDependenciesIfMissing } from "../utils";
@@ -69,7 +68,7 @@ export const actionScript = async (req: Request, res: Response) => {
     }
     const config = schemaDocData.columns[column.key].config;
     const { script, requiredRoles, requiredFields, runFn, undoFn } = config;
-    const importHeader = `import rowy from "./rowy";\n import fetch from "node-fetch";\n`;
+    const importHeader = `import rowy from "./rowy";\n`;
     const runFunctionCode = transpile(importHeader, runFn, script, "action");
     const undoFunctionCode = transpile(
       importHeader,
