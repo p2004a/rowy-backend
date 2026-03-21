@@ -6,7 +6,7 @@ export const impersonateUser = async (req: Request, res: Response) => {
     const impersonator = res.locals.user;
     const { email } = req.params;
     // check if user exists
-    const user = await auth.getUserByEmail(email);
+    const user = await auth.getUserByEmail(email as string);
     const token = await auth.createCustomToken(user.uid);
     await db.collection(rowyUsersImpersonationLogs).add({
       createdAt: new Date(),
