@@ -8,7 +8,7 @@ import {
 } from "./utils";
 import generateConfig from "./compiler";
 import { commandErrorHandler, createStreamLogger } from "./logger";
-import firebase from "firebase-admin";
+import type { UserRecord } from "firebase-admin/auth";
 import { getProjectId } from "../metadataService";
 import { db } from "../firebaseConfig";
 import fs from "fs";
@@ -16,7 +16,7 @@ import path from "path";
 
 export const functionBuilder = async (
   req: any,
-  user: firebase.auth.UserRecord
+  user: UserRecord
 ) => {
   try {
     const { tablePath, tableConfigPath } = req.body;

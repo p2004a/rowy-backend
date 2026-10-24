@@ -1,6 +1,7 @@
 import type { Change } from "firebase-functions/v2/firestore";
 import type { DocumentSnapshot } from "firebase-admin/firestore";
-import * as admin from "firebase-admin";
+import type { Auth } from "firebase-admin/auth";
+import type { Storage } from "firebase-admin/storage";
 import { db, auth, storage } from "../firebaseConfig";
 import utilFns from "../utils";
 import { LoggingFactory, type RowyLogging } from "../logging";
@@ -14,8 +15,8 @@ const derivative =
         row: any;
         ref: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
         db: FirebaseFirestore.Firestore;
-        auth: admin.auth.Auth;
-        storage: admin.storage.Storage;
+        auth: Auth;
+        storage: Storage;
         utilFns: any;
         logging: RowyLogging;
         tableSchema: any;

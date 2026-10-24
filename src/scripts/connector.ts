@@ -4,7 +4,7 @@ import { User } from "../types/User";
 import { DocumentReference } from "firebase-admin/firestore";
 import rowy, { Rowy } from "./rowy";
 import { Auth } from "firebase-admin/auth";
-import * as admin from "firebase-admin";
+import type { Storage } from "firebase-admin/storage";
 import { installDependenciesIfMissing } from "../utils";
 import { telemetryRuntimeDependencyPerformance } from "../rowyService";
 import { LoggingFactory, RowyLogging } from "../logging";
@@ -25,7 +25,7 @@ type ConnectorArgs = {
   user: User;
   rowy: Rowy;
   fetch: any;
-  storage: admin.storage.Storage;
+  storage: Storage;
   logging: RowyLogging;
   tableSchema: any;
 };

@@ -1,7 +1,10 @@
 # Build stage
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 
 WORKDIR /home/node/app
+
+# Node 26 images no longer bundle yarn.
+RUN npm install -g yarn@1.22.22
 
 COPY package.json yarn.lock* ./
 RUN yarn --frozen-lockfile
@@ -9,11 +12,13 @@ COPY . ./
 RUN yarn build
 
 # Production stage
-FROM node:24-alpine
+FROM node:26-alpine
 
 WORKDIR /home/node/app
 
-RUN apk add --no-cache tini
+# yarn is also needed at runtime: the function builder installs and deploys
+# the generated Cloud Functions with it.
+RUN apk add --no-cache tini && npm install -g yarn@1.22.22 && npm cache clean --force
 ENTRYPOINT ["tini", "--"]
 
 COPY package.json yarn.lock* ./

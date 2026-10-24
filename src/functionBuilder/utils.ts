@@ -1,8 +1,8 @@
-import admin from "firebase-admin";
+import type { UserRecord } from "firebase-admin/auth";
 import { transform as sucraseTransform } from "sucrase";
 
 export function rowyUser(
-  user: admin.auth.UserRecord,
+  user: UserRecord,
   data?: Record<string, any>
 ) {
   return {

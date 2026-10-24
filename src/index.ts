@@ -23,7 +23,7 @@ import {
   getOwner,
 } from "./setup";
 import { checkIfFTMigrationRequired, migrateFT2Rowy } from "./setup/ft2rowy";
-import firebase from "firebase-admin";
+import type { UserRecord } from "firebase-admin/auth";
 import { getAlgoliaSearchKey } from "./connectTable/algolia";
 
 import { metadataService, getProjectId } from "./metadataService";
@@ -54,7 +54,7 @@ app.get("/", async (req, res) => {
   }
 });
 const functionWrapper = (fn) => async (req, res) => {
-  const user: firebase.auth.UserRecord = res.locals.user;
+  const user: UserRecord = res.locals.user;
   try {
     const data = await fn(req, user);
     res.status(200).send(data);
