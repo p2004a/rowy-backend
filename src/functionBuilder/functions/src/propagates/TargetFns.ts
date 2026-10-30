@@ -1,6 +1,6 @@
-import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
-const fieldValue = admin.firestore.FieldValue;
+const fieldValue = FieldValue;
 import { db } from "../firebaseConfig";
 const TARGET_SUB_COLLECTION = "_FT_BINDINGS";
 //sample bindings document

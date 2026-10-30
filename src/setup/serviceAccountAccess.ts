@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db, auth } from "../firebaseConfig";
-import { securityRules } from "firebase-admin";
+import { getSecurityRules } from "firebase-admin/security-rules";
 export const serviceAccountAccess = async (req: Request, res: Response) => {
   try {
     const access: any = {};
@@ -36,7 +36,7 @@ export const serviceAccountAccess = async (req: Request, res: Response) => {
     }
     // test access to firestore rules
     try {
-      await securityRules().getFirestoreRuleset();
+      await getSecurityRules().getFirestoreRuleset();
       access.firestoreRules = true;
     } catch (error) {
       console.log(error);

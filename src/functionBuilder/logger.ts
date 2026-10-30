@@ -1,5 +1,6 @@
 import { db } from "../firebaseConfig";
-import admin from "firebase-admin";
+import type { UserRecord } from "firebase-admin/auth";
+import { FieldValue } from "firebase-admin/firestore";
 import { rowyUser } from "./utils";
 export async function insertErrorToStreamer(
   errorRecord: any,
@@ -24,7 +25,7 @@ export async function insertErrorToStreamer(
 
 export function commandErrorHandler(
   meta: {
-    user: admin.auth.UserRecord;
+    user: UserRecord;
     description?: string;
     functionConfigTs?: string;
     sparksConfig?: string;
@@ -41,7 +42,7 @@ export function commandErrorHandler(
     const errorRecord = {
       errorType: "commandError",
       ranBy: rowyUser(meta.user),
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
       stdout: stdout ?? "",
       stderr: stderr ?? "",
       errorStackTrace: error?.stack ?? "",
@@ -59,7 +60,7 @@ export async function logErrorToDB(
     errorDescription: string;
     errorExtraInfo?: string;
     errorTraceStack?: string;
-    user: admin.auth.UserRecord;
+    user: UserRecord;
     sparksConfig?: string;
   },
   streamLogger: any
@@ -70,7 +71,7 @@ export async function logErrorToDB(
     errorType: "codeError",
     ranBy: rowyUser(data.user),
     description: data.errorDescription,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
     sparksConfig: data?.sparksConfig ?? "",
     errorExtraInfo: data?.errorExtraInfo ?? "",
     errorStackTrace: data?.errorTraceStack ?? "",

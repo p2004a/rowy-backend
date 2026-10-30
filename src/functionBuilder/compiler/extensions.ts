@@ -1,12 +1,12 @@
-import admin from "firebase-admin";
+import type { UserRecord } from "firebase-admin/auth";
 import { commandErrorHandler, logErrorToDB } from "../logger";
-import { addPackages } from "./terminal";
+import { addPackages, tscFlags } from "./terminal";
 import { asyncExecute } from "../../terminalUtils";
 import { getExtension } from "../../rowyService";
 
 export const addExtensionLib = async (
   name: string,
-  user: admin.auth.UserRecord,
+  user: UserRecord,
   streamLogger,
   buildPath,
   buildFolderTimestamp
@@ -31,7 +31,7 @@ export const addExtensionLib = async (
       ),
       extension
     );
-    await asyncExecute(`cd ${buildPath}/src/extensions;tsc ${name}.ts`, {
+    await asyncExecute(`cd ${buildPath}/src/extensions;tsc ${tscFlags} ${name}.ts`, {
       callback: commandErrorHandler(
         {
           user,

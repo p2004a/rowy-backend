@@ -1,8 +1,7 @@
-import * as admin from "firebase-admin";
 import type { Change } from "firebase-functions/v2/firestore";
-import type { DocumentSnapshot } from "firebase-admin/firestore";
+import { FieldValue, type DocumentSnapshot } from "firebase-admin/firestore";
 import * as _ from "lodash";
-export const serverTimestamp = admin.firestore.FieldValue.serverTimestamp;
+export const serverTimestamp = FieldValue.serverTimestamp;
 import { sendEmail } from "./email";
 import { hasAnyRole } from "./auth";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";

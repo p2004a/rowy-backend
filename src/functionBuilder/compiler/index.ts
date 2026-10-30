@@ -1,4 +1,4 @@
-import { addPackages } from "./terminal";
+import { addPackages, tscFlags } from "./terminal";
 import { addExtensionLib } from "./extensions";
 import { asyncExecute } from "../../terminalUtils";
 import * as _ from "lodash";
@@ -11,7 +11,7 @@ import {
 import { commandErrorHandler } from "../logger";
 import { db } from "../../firebaseConfig";
 const path = require("path");
-import admin from "firebase-admin";
+import type { UserRecord } from "firebase-admin/auth";
 import { getProjectId } from "../../metadataService";
 import { DocumentData } from "firebase-admin/firestore";
 
@@ -23,7 +23,7 @@ export default async function generateConfig(
     tableSchemaPaths: string[];
     rowySettings: DocumentData;
   },
-  user: admin.auth.UserRecord,
+  user: UserRecord,
   streamLogger,
   buildPath,
   buildFolderTimestamp
@@ -106,7 +106,7 @@ export default async function generateConfig(
 
   await streamLogger.info(`Validating config file...`);
   const isFunctionConfigValid = await asyncExecute(
-    `cd ${buildPath}/src;tsc --skipLibCheck functionConfig.ts`,
+    `cd ${buildPath}/src;tsc ${tscFlags} functionConfig.ts`,
     {
       callback: commandErrorHandler(
         {

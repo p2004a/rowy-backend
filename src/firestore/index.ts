@@ -1,6 +1,6 @@
 import { db } from "../firebaseConfig";
 import { Request } from "express";
-import { securityRules } from "firebase-admin";
+import { getSecurityRules } from "firebase-admin/security-rules";
 
 export const listCollections = async (req: Request) => {
   const { path } = req.query;
@@ -18,7 +18,7 @@ export const listCollections = async (req: Request) => {
 };
 
 export const getFirestoreRules = async () => {
-  const firestoreRules = await securityRules().getFirestoreRuleset();
+  const firestoreRules = await getSecurityRules().getFirestoreRuleset();
   return firestoreRules;
 };
 
@@ -26,7 +26,7 @@ export const setFirestoreRules = async (req: Request) => {
   const { ruleset } = req.body;
   console.log(ruleset);
   if (!ruleset) throw new Error("No ruleset Provided");
-  const resp = await securityRules().releaseFirestoreRulesetFromSource(ruleset);
+  const resp = await getSecurityRules().releaseFirestoreRulesetFromSource(ruleset);
   return {
     success: true,
     resp,
